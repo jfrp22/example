@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos MQTT en GitHub Pages</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+</head>
+<body>
+    <h1>Valor MQTT:</h1>
+    <p id="mqtt-value">Esperando datos...</p>
+
+    <script>
+        // Configuración del cliente MQTT
+        const broker = "broker.hivemq.com"; // Broker público
+        const port = 8000; // Puerto WebSocket (no usar 1883, ya que es para TCP)
+        const topic = "tu/tema/unico"; // Tema único al que suscribirse
+
+        // Crear cliente MQTT
+        const client = new Paho.MQTT.Client(broker, port, "clientId-" + Math.random().toString(16).substr(2, 8));
+
+        // Conexión al broker
+        client.connect({
+            onSuccess: () => {
+                console.log("Conectado al broker MQTT");
+                client.subscribe(topic, { qos: 0 }); // Suscribirse al tema
+            },
+            onFailure: (err) => {
+                console.error("Error al conectar al broker MQTT", err);
+            }
+        });
+
+        // Manejo de mensajes recibidos
+        client.onMessageArrived = (message) => {
+            document.getElementById("mqtt-value").innerText = message.payloadString;
+        };
+    </script>
+</body>
+</html>
